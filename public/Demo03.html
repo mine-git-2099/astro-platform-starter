@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>工会健康药房</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+        }
+        
+        :root {
+            --primary-color: #e53935;
+            --primary-light: #ffcdd2;
+            --primary-dark: #b71c1c;
+            --text-color: #333;
+            --text-light: #666;
+            --bg-color: #fff;
+            --border-color: #eee;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: var(--text-color);
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 100%;
+            padding: 0 15px;
+        }
+        
+        /* 头部样式 */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 8px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .login-btn, .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .search-bar {
+            background: white;
+            border-radius: 20px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .search-bar input {
+            border: none;
+            outline: none;
+            width: 100%;
+            margin-left: 8px;
+            font-size: 14px;
+        }
+        
+        /* 金刚位分类 */
+        .category-nav {
+            display: flex;
+            overflow-x: auto;
+            padding: 15px 0;
+            background: white;
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            scrollbar-width: none;
+        }
+        
+        .category-nav::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .category-item {
+            flex: 0 0 auto;
+            text-align: center;
+            margin: 0 10px;
+            width: 60px;
+        }
+        
+        .category-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 5px;
+            color: var(--primary-color);
+        }
+        
+        .category-name {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        /* 药品列表 */
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 15px 0 10px;
+            padding-left: 10px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .product-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 120px;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-size: 40px;
+        }
+        
+        .product-info {
+            padding: 10px;
+        }
+        
+        .product-name {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            height: 40px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        
+        .product-price {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        
+        .current-price {
+            color: var(--primary-color);
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .original-price {
+            color: var(--text-light);
+            font-size: 12px;
+            text-decoration: line-through;
+            margin-left: 5px;
+        }
+        
+        .member-price {
+            font-size: 12px;
+            color: var(--primary-color);
+            background: var(--primary-light);
+            padding: 2px 5px;
+            border-radius: 3px;
+            margin-left: 5px;
+        }
+        
+        .points-info {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+        
+        .add-to-cart {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        /* 底部导航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            border-top: 1px solid var(--border-color);
+            z-index: 100;
+        }
+        
+        .nav-item {
+            text-align: center;
+            color: var(--text-light);
+            font-size: 12px;
+        }
+        
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 3px;
+        }
+        
+        /* 模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: var(--text-color);
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        /* 购物车徽章 */
+        .cart-badge {
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: -5px;
+            right: -5px;
+        }
+        
+        /* 会员价格模糊效果 */
+        .price-blur {
+            filter: blur(3px);
+            position: relative;
+        }
+        
+        .price-blur::after {
+            content: "登录后查看";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        /* 响应式调整 */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 750px;
+                margin: 0 auto;
+            }
+            
+            .product-list {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 登录模态框 -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <h2 class="modal-title">登录工会健康药房</h2>
+            <div class="form-group">
+                <label for="username">用户名</label>
+                <input type="text" id="username" placeholder="请输入用户名">
+            </div>
+            <div class="form-group">
+                <label for="password">密码</label>
+                <input type="password" id="password" placeholder="请输入密码">
+            </div>
+            <div class="form-group">
+                <button id="loginBtn" class="btn btn-primary btn-block">登录</button>
+            </div>
+            <p style="text-align: center; font-size: 12px; color: var(--text-light);">
+                测试账号：member/123（会员）或 guest/123（非会员）
+            </p>
+        </div>
+    </div>
+
+    <!-- 主界面 -->
+    <div id="app">
+        <header>
+            <div class="header-top">
+                <div class="logo">
+                    <i>💊</i> 工会健康药房
+                </div>
+                <div class="user-info">
+                    <span id="userStatus">未登录</span>
+                    <button id="loginButton" class="login-btn">登录</button>
+                    <button id="logoutButton" class="logout-btn" style="display: none;">退出</button>
+                </div>
+            </div>
+            <div class="search-bar">
+                <i>🔍</i>
+                <input type="text" placeholder="搜索药品名称">
+            </div>
+        </header>
+
+        <div class="container">
+            <!-- 金刚位分类 -->
+            <div class="category-nav">
+                <div class="category-item">
+                    <div class="category-icon">💊</div>
+                    <div class="category-name">感冒用药</div>
+                </div>
+                <div class="category-item">
+                    <div class="category-icon">🌡️</div>
+                    <div class="category-name">退热镇痛</div>
+                </div>
+                <div class="category-item">
+                    <div class="category-icon">🦠</div>
+                    <div class="category-name">消炎抗菌</div>
+                </div>
+                <div class="category-item">
+                    <div class="category-icon">💪</div>
+                    <div class="category-name">维生素</div>
+                </div>
+                <div class="category-item">
+                    <div class="category-icon">👶</div>
+                    <div class="category-name">儿科用药</div>
+                </div>
+                <div class="category-item">
+                    <div class="category-icon">👵</div>
+                    <div class="category-name">老年健康</div>
+                </div>
+                <div class="category-item">
+                    <div class="category-icon">🌿</div>
+                    <div class="category-name">中药养生</div>
+                </div>
+            </div>
+
+            <!-- 热门推荐 -->
+            <h2 class="section-title">热门推荐</h2>
+            <div class="product-list" id="hotProducts">
+                <!-- 热门商品将通过JS动态生成 -->
+            </div>
+
+            <!-- 个性化推荐 -->
+            <h2 class="section-title">为您推荐</h2>
+            <div class="product-list" id="personalizedProducts">
+                <!-- 个性化推荐商品将通过JS动态生成 -->
+            </div>
+        </div>
+
+        <!-- 底部导航 -->
+        <div class="bottom-nav">
+            <div class="nav-item active">
+                <div class="nav-icon">🏠</div>
+                <div>首页</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">📋</div>
+                <div>分类</div>
+            </div>
+            <div class="nav-item" id="cartNav">
+                <div class="nav-icon">🛒</div>
+                <div>购物车</div>
+                <div class="cart-badge" id="cartBadge" style="display: none;">0</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">👤</div>
+                <div>我的</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 模拟数据
+        const products = [
+            { id: 1, name: "感冒灵颗粒", price: 25.8, memberPrice: 22.5, image: "💊", category: "感冒用药", isPrescription: false },
+            { id: 2, name: "布洛芬缓释胶囊", price: 18.5, memberPrice: 15.9, image: "🌡️", category: "退热镇痛", isPrescription: false },
+            { id: 3, name: "阿莫西林胶囊", price: 32.0, memberPrice: 28.5, image: "🦠", category: "消炎抗菌", isPrescription: true },
+            { id: 4, name: "维生素C片", price: 15.0, memberPrice: 12.8, image: "💪", category: "维生素", isPrescription: false },
+            { id: 5, name: "小儿感冒颗粒", price: 28.0, memberPrice: 24.9, image: "👶", category: "儿科用药", isPrescription: false },
+            { id: 6, name: "钙尔奇D片", price: 45.0, memberPrice: 39.9, image: "👵", category: "老年健康", isPrescription: false },
+            { id: 7, name: "六味地黄丸", price: 38.5, memberPrice: 34.9, image: "🌿", category: "中药养生", isPrescription: false },
+            { id: 8, name: "连花清瘟胶囊", price: 29.9, memberPrice: 26.5, image: "💊", category: "感冒用药", isPrescription: false }
+        ];
+
+        // 用户状态
+        let currentUser = null;
+        let cart = [];
+        
+        // DOM元素
+        const loginModal = document.getElementById('loginModal');
+        const loginButton = document.getElementById('loginButton');
+        const logoutButton = document.getElementById('logoutButton');
+        const userStatus = document.getElementById('userStatus');
+        const hotProductsContainer = document.getElementById('hotProducts');
+        const personalizedProductsContainer = document.getElementById('personalizedProducts');
+        const cartBadge = document.getElementById('cartBadge');
+        const cartNav = document.getElementById('cartNav');
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 检查本地存储中的登录状态
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                updateUserInterface();
+            }
+            
+            // 加载购物车
+            const savedCart = localStorage.getItem('cart');
+            if (savedCart) {
+                cart = JSON.parse(savedCart);
+                updateCartBadge();
+            }
+            
+            // 渲染商品列表
+            renderProductList(hotProductsContainer, products.slice(0, 4), '热门推荐');
+            renderProductList(personalizedProductsContainer, products.slice(4), '为您推荐');
+            
+            // 事件监听
+            loginButton.addEventListener('click', showLoginModal);
+            logoutButton.addEventListener('click', logout);
+            document.getElementById('loginBtn').addEventListener('click', login);
+            
+            // 购物车导航点击事件
+            cartNav.addEventListener('click', function() {
+                alert('购物车功能开发中...');
+            });
+        });
+        
+        // 显示登录模态框
+        function showLoginModal() {
+            loginModal.style.display = 'flex';
+        }
+        
+        // 隐藏登录模态框
+        function hideLoginModal() {
+            loginModal.style.display = 'none';
+        }
+        
+        // 登录功能
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // 简单验证
+            if (!username || !password) {
+                alert('请输入用户名和密码');
+                return;
+            }
+            
+            // 模拟登录验证
+            if ((username === 'member' && password === '123') || 
+                (username === 'guest' && password === '123')) {
+                
+                currentUser = {
+                    username: username,
+                    isMember: username === 'member',
+                    points: username === 'member' ? 500 : 0
+                };
+                
+                // 保存到本地存储
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                
+                // 更新界面
+                updateUserInterface();
+                hideLoginModal();
+                
+                // 重新渲染商品列表以显示会员价格
+                renderProductList(hotProductsContainer, products.slice(0, 4), '热门推荐');
+                renderProductList(personalizedProductsContainer, products.slice(4), '为您推荐');
+                
+                alert('登录成功！');
+            } else {
+                alert('用户名或密码错误，请使用测试账号：member/123（会员）或 guest/123（非会员）');
+            }
+        }
+        
+        // 退出登录
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            updateUserInterface();
+            
+            // 重新渲染商品列表以隐藏会员价格
+            renderProductList(hotProductsContainer, products.slice(0, 4), '热门推荐');
+            renderProductList(personalizedProductsContainer, products.slice(4), '为您推荐');
+            
+            alert('已退出登录');
+        }
+        
+        // 更新用户界面
+        function updateUserInterface() {
+            if (currentUser) {
+                userStatus.textContent = currentUser.isMember ? 
+                    `会员 (${currentUser.points}积分)` : '非会员';
+                loginButton.style.display = 'none';
+                logoutButton.style.display = 'inline-block';
+            } else {
+                userStatus.textContent = '未登录';
+                loginButton.style.display = 'inline-block';
+                logoutButton.style.display = 'none';
+            }
+        }
+        
+        // 渲染商品列表
+        function renderProductList(container, products, type) {
+            container.innerHTML = '';
+            
+            products.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                
+                // 计算最大可抵扣金额
+                const maxDeductible = product.memberPrice * 0.5;
+                const maxPoints = maxDeductible * 10;
+                
+                // 根据用户状态决定价格显示
+                const showMemberPrice = currentUser && currentUser.isMember;
+                
+                productCard.innerHTML = `
+                    <div class="product-image">${product.image}</div>
+                    <div class="product-info">
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-price">
+                            <span class="current-price">¥${showMemberPrice ? product.memberPrice : product.price}</span>
+                            ${showMemberPrice ? `<span class="original-price">¥${product.price}</span>` : ''}
+                            ${showMemberPrice ? `<span class="member-price">会员价</span>` : ''}
+                        </div>
+                        ${showMemberPrice ? 
+                            `<div class="points-info">最多可用${maxPoints}积分抵扣¥${maxDeductible.toFixed(2)}</div>` : 
+                            `<div class="points-info price-blur">会员专享优惠</div>`
+                        }
+                        <button class="add-to-cart" data-id="${product.id}">加入购物车</button>
+                    </div>
+                `;
+                
+                container.appendChild(productCard);
+            });
+            
+            // 添加购物车事件监听
+            const addToCartButtons = container.querySelectorAll('.add-to-cart');
+            addToCartButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    if (!currentUser) {
+                        alert('请先登录');
+                        showLoginModal();
+                        return;
+                    }
+                    
+                    const productId = parseInt(this.getAttribute('data-id'));
+                    addToCart(productId);
+                });
+            });
+        }
+        
+        // 添加到购物车
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            
+            // 检查是否处方药
+            if (product.isPrescription && !confirm('此商品为处方药，购买需要医生处方。是否继续？')) {
+                return;
+            }
+            
+            // 检查购物车中是否已有该商品
+            const existingItem = cart.find(item => item.id === productId);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    price: currentUser && currentUser.isMember ? product.memberPrice : product.price,
+                    image: product.image,
+                    quantity: 1,
+                    isPrescription: product.isPrescription
+                });
+            }
+            
+            // 更新本地存储
+            localStorage.setItem('cart', JSON.stringify(cart));
+            
+            // 更新购物车徽章
+            updateCartBadge();
+            
+            alert('已添加到购物车');
+        }
+        
+        // 更新购物车徽章
+        function updateCartBadge() {
+            const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+            
+            if (totalItems > 0) {
+                cartBadge.textContent = totalItems;
+                cartBadge.style.display = 'flex';
+            } else {
+                cartBadge.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
