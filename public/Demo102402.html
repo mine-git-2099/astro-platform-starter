@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>广西工会平台 - 购药商城</title>
+    <style>
+        /* 基础样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f8f8;
+            color: #333;
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+            min-height: 100vh;
+        }
+        
+        /* 红白主题色 */
+        :root {
+            --primary-color: #e74c3c;
+            --primary-light: #ffebe9;
+            --secondary-color: #f1c40f;
+            --white: #ffffff;
+            --light-gray: #f5f5f5;
+            --dark-gray: #666;
+            --text-color: #333;
+        }
+        
+        /* 头部样式 */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), #c0392b);
+            color: white;
+            padding: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .login-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+        
+        .member-badge {
+            background: var(--secondary-color);
+            color: #333;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .search-bar {
+            background: white;
+            border-radius: 20px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .search-bar input {
+            border: none;
+            outline: none;
+            width: 100%;
+            margin-left: 5px;
+        }
+        
+        /* 主要内容区 */
+        main {
+            padding-bottom: 70px; /* 为底部导航留出空间 */
+        }
+        
+        section {
+            margin: 15px;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .section-title span {
+            color: var(--primary-color);
+            font-size: 14px;
+        }
+        
+        /* 金刚位分类 */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .category-item {
+            text-align: center;
+        }
+        
+        .category-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-light);
+            border-radius: 10px;
+            margin: 0 auto 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-size: 24px;
+        }
+        
+        .category-name {
+            font-size: 12px;
+            color: var(--dark-gray);
+        }
+        
+        /* 药品列表 */
+        .med-list {
+            display: flex;
+            overflow-x: auto;
+            gap: 15px;
+            padding: 5px 0;
+        }
+        
+        .med-item {
+            min-width: 120px;
+            background: var(--light-gray);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .med-image {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 5px;
+            margin: 0 auto 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-size: 30px;
+        }
+        
+        .med-name {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .med-price {
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .med-points {
+            font-size: 12px;
+            color: var(--dark-gray);
+            margin-top: 3px;
+        }
+        
+        .add-to-cart {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 5px 10px;
+            font-size: 12px;
+            margin-top: 5px;
+            width: 100%;
+        }
+        
+        /* 底部导航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        
+        .nav-item {
+            text-align: center;
+            font-size: 12px;
+            color: var(--dark-gray);
+        }
+        
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 3px;
+        }
+        
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 10px;
+            padding: 20px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--light-gray);
+            padding-bottom: 10px;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--dark-gray);
+        }
+        
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .btn-secondary {
+            background: var(--light-gray);
+            color: var(--text-color);
+        }
+        
+        /* 购物车样式 */
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .cart-item-info {
+            flex: 1;
+        }
+        
+        .cart-item-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .cart-item-price {
+            color: var(--primary-color);
+        }
+        
+        .cart-item-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid var(--light-gray);
+            font-weight: bold;
+        }
+        
+        /* 客服样式 */
+        .chat-container {
+            height: 300px;
+            border: 1px solid var(--light-gray);
+            border-radius: 5px;
+            overflow-y: auto;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .message {
+            margin-bottom: 10px;
+            max-width: 80%;
+        }
+        
+        .user-message {
+            background: var(--primary-light);
+            padding: 8px 12px;
+            border-radius: 15px 15px 0 15px;
+            margin-left: auto;
+        }
+        
+        .bot-message {
+            background: var(--light-gray);
+            padding: 8px 12px;
+            border-radius: 15px 15px 15px 0;
+        }
+        
+        /* 订单状态 */
+        .order-status {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            position: relative;
+        }
+        
+        .status-step {
+            text-align: center;
+            flex: 1;
+            position: relative;
+        }
+        
+        .status-step:not(:last-child):after {
+            content: '';
+            position: absolute;
+            top: 15px;
+            right: -50%;
+            width: 100%;
+            height: 2px;
+            background: #ddd;
+            z-index: 1;
+        }
+        
+        .status-step.active:not(:last-child):after {
+            background: var(--primary-color);
+        }
+        
+        .status-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 5px;
+            z-index: 2;
+            position: relative;
+        }
+        
+        .status-step.active .status-icon {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .status-name {
+            font-size: 12px;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 400px) {
+            .category-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 登录模态框 -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">身份验证</h3>
+                <button class="close-modal" onclick="closeModal('loginModal')">×</button>
+            </div>
+            <div class="form-group">
+                <label>手机号</label>
+                <input type="tel" id="phone" placeholder="请输入手机号">
+            </div>
+            <div class="form-group">
+                <label>验证码</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="code" placeholder="请输入验证码">
+                    <button class="btn btn-secondary" style="width: auto; padding: 10px;" onclick="sendCode()">获取验证码</button>
+                </div>
+            </div>
+            <button class="btn" onclick="login()">登录</button>
+            <p style="text-align: center; margin-top: 15px; font-size: 12px; color: var(--dark-gray);">
+                登录即表示同意《用户协议》和《隐私政策》
+            </p>
+        </div>
+    </div>
+
+    <!-- 购物车模态框 -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">购物车</h3>
+                <button class="close-modal" onclick="closeModal('cartModal')">×</button>
+            </div>
+            <div id="cartItems">
+                <!-- 购物车商品将动态添加到这里 -->
+            </div>
+            <div class="cart-total">
+                <span>总计:</span>
+                <span id="cartTotal">¥0.00</span>
+            </div>
+            <button class="btn" onclick="checkout()">去结算</button>
+        </div>
+    </div>
+
+    <!-- 订单模态框 -->
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">订单确认</h3>
+                <button class="close-modal" onclick="closeModal('orderModal')">×</button>
+            </div>
+            <div id="orderItems">
+                <!-- 订单商品将动态添加到这里 -->
+            </div>
+            <div class="form-group">
+                <label>收货地址</label>
+                <input type="text" id="address" placeholder="请输入详细收货地址">
+            </div>
+            <div class="cart-total">
+                <span>总计:</span>
+                <span id="orderTotal">¥0.00</span>
+            </div>
+            <div id="pointsDeduction" style="margin: 10px 0; font-size: 14px;">
+                <!-- 积分抵扣信息将动态添加 -->
+            </div>
+            <button class="btn" onclick="submitOrder()">提交订单</button>
+        </div>
+    </div>
+
+    <!-- 客服模态框 -->
+    <div id="serviceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">客服中心</h3>
+                <button class="close-modal" onclick="closeModal('serviceModal')">×</button>
+            </div>
+            <div class="chat-container" id="chatContainer">
+                <div class="message bot-message">
+                    您好，我是AI客服小药，请问有什么可以帮您？
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="chatInput" placeholder="输入您的问题..." style="flex: 1;">
+                <button class="btn" style="width: auto;" onclick="sendMessage()">发送</button>
+            </div>
+            <div style="margin-top: 15px; text-align: center;">
+                <button class="btn btn-secondary" onclick="switchToHuman()">转人工客服</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 处方药补方模态框 -->
+    <div id="prescriptionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">处方药补方</h3>
+                <button class="close-modal" onclick="closeModal('prescriptionModal')">×</button>
+            </div>
+            <p style="margin-bottom: 15px;">您购买的药品中包含处方药，需要医生开具电子处方。</p>
+            <div class="form-group">
+                <label>请选择症状描述</label>
+                <select id="symptoms">
+                    <option value="">请选择症状</option>
+                    <option value="感冒">感冒</option>
+                    <option value="发烧">发烧</option>
+                    <option value="咳嗽">咳嗽</option>
+                    <option value="头痛">头痛</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>详细描述</label>
+                <textarea id="symptomDetail" placeholder="请详细描述您的症状..."></textarea>
+            </div>
+            <button class="btn" onclick="submitPrescription()">提交补方申请</button>
+        </div>
+    </div>
+
+    <!-- 支付模态框 -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">微信支付</h3>
+                <button class="close-modal" onclick="closeModal('paymentModal')">×</button>
+            </div>
+            <div style="text-align: center; padding: 30px 0;">
+                <div style="font-size: 24px; font-weight: bold; color: var(--primary-color); margin-bottom: 10px;" id="paymentAmount">¥0.00</div>
+                <div style="margin-bottom: 20px;">请使用微信扫描下方二维码完成支付</div>
+                <div style="width: 200px; height: 200px; background: #f5f5f5; margin: 0 auto; display: flex; align-items: center; justify-content: center;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 14px; margin-bottom: 5px;">演示用二维码</div>
+                        <div style="font-size: 12px; color: var(--dark-gray);">支付功能仅作演示</div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn" onclick="completePayment()">模拟支付完成</button>
+        </div>
+    </div>
+
+    <!-- 订单详情模态框 -->
+    <div id="orderDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">订单详情</h3>
+                <button class="close-modal" onclick="closeModal('orderDetailModal')">×</button>
+            </div>
+            <div id="orderDetailContent">
+                <!-- 订单详情将动态添加 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 主界面 -->
+    <header>
+        <div class="header-top">
+            <div class="logo">广西工会购药商城</div>
+            <div class="user-info">
+                <span id="userPoints" style="display: none;">积分: 0</span>
+                <div id="memberBadge" class="member-badge" style="display: none;">会员</div>
+                <button id="loginButton" class="login-btn" onclick="openModal('loginModal')">登录</button>
+            </div>
+        </div>
+        <div class="search-bar">
+            <span>🔍</span>
+            <input type="text" placeholder="搜索药品名称">
+        </div>
+    </header>
+
+    <main>
+        <!-- 金刚位热门分类 -->
+        <section>
+            <div class="section-title">
+                <span>热门分类</span>
+                <span>全部</span>
+            </div>
+            <div class="category-grid">
+                <div class="category-item">
+                    <div class="category-icon">💊</div>
+                    <div class="category-name">感冒发烧</div>
+                </div>
+                <div class="category-item">
+                    <div class="category-icon">🌡️</div>
+                    <div class="category-name">肠胃用药</div>
+                </div>
+                <div class="category-item">
+                    <div class="category-icon">🧴</div>
+                    <div class="category-name">皮肤用药</div>
+                </div>
+                <div class="category-item">
+                    <div class="category-icon">💪</div>
+                    <div class="category-name">维生素</div>
+                </div>
+                <div class="category-item">
+                    <div class="category-icon">👁️</div>
+                    <div class="category-name">眼药水</div>
+                </div>
+                <div class="category-item">
+                    <div class="category-icon">🦷</div>
+                    <div class="category-name">口腔护理</div>
+                </div>
+                <div class="category-item">
+                    <div class="category-icon">🩹</div>
+                    <div class="category-name">创可贴</div>
+                </div>
+                <div class="category-item">
+                    <div class="category-icon">🧼</div>
+                    <div class="category-name">消毒用品</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 个性化推荐 -->
+        <section>
+            <div class="section-title">
+                <span>为您推荐</span>
+                <span>根据您的健康档案推荐</span>
+            </div>
+            <div class="med-list">
+                <!-- 药品将动态添加 -->
+            </div>
+        </section>
+
+        <!-- 全量药品分类 -->
+        <section>
+            <div class="section-title">
+                <span>全部药品</span>
+                <span>分类浏览</span>
+            </div>
+            <div class="med-list">
+                <!-- 药品将动态添加 -->
+            </div>
+        </section>
+    </main>
+
+    <!-- 底部导航 -->
+    <div class="bottom-nav">
+        <div class="nav-item active">
+            <div class="nav-icon">🏠</div>
+            <div>首页</div>
+        </div>
+        <div class="nav-item" onclick="openModal('cartModal')">
+            <div class="nav-icon">🛒</div>
+            <div>购物车</div>
+        </div>
+        <div class="nav-item" onclick="viewOrders()">
+            <div class="nav-icon">📦</div>
+            <div>订单</div>
+        </div>
+        <div class="nav-item" onclick="openModal('serviceModal')">
+            <div class="nav-icon">💬</div>
+            <div>客服</div>
+        </div>
+    </div>
+
+    <script>
+        // 模拟数据
+        const medicines = [
+            { id: 1, name: "感冒灵颗粒", price: 25.8, points: 129, category: "感冒发烧", image: "💊", isPrescription: false },
+            { id: 2, name: "布洛芬缓释胶囊", price: 18.5, points: 93, category: "止痛退烧", image: "🌡️", isPrescription: false },
+            { id: 3, name: "蒙脱石散", price: 32.0, points: 160, category: "肠胃用药", image: "💊", isPrescription: false },
+            { id: 4, name: "维生素C片", price: 15.0, points: 75, category: "维生素", image: "💊", isPrescription: false },
+            { id: 5, name: "阿莫西林胶囊", price: 28.5, points: 143, category: "抗生素", image: "💊", isPrescription: true },
+            { id: 6, name: "皮炎平软膏", price: 22.0, points: 110, category: "皮肤用药", image: "🧴", isPrescription: false },
+            { id: 7, name: "眼药水", price: 19.8, points: 99, category: "眼药水", image: "👁️", isPrescription: false },
+            { id: 8, name: "创可贴", price: 8.5, points: 43, category: "创可贴", image: "🩹", isPrescription: false }
+        ];
+
+        // 用户状态
+        let user = {
+            isLoggedIn: false,
+            isMember: false,
+            points: 0,
+            cart: [],
+            orders: []
+        };
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            renderMedicines();
+            updateCartCount();
+        });
+
+        // 渲染药品列表
+        function renderMedicines() {
+            const recommendedList = document.querySelector('.med-list');
+            const allList = document.querySelectorAll('.med-list')[1];
+            
+            recommendedList.innerHTML = '';
+            allList.innerHTML = '';
+            
+            // 根据用户信息推荐药品（简化逻辑）
+            const recommendedMeds = medicines.slice(0, 4);
+            const allMeds = medicines;
+            
+            recommendedMeds.forEach(med => {
+                recommendedList.appendChild(createMedicineCard(med));
+            });
+            
+            allMeds.forEach(med => {
+                allList.appendChild(createMedicineCard(med));
+            });
+        }
+
+        // 创建药品卡片
+        function createMedicineCard(med) {
+            const div = document.createElement('div');
+            div.className = 'med-item';
+            
+            // 计算可抵扣金额（会员最多抵扣50%）
+            const maxDeduction = med.price * 0.5;
+            const pointsNeeded = maxDeduction * 10; // 10积分抵扣1元
+            
+            div.innerHTML = `
+                <div class="med-image">${med.image}</div>
+                <div class="med-name">${med.name}</div>
+                <div class="med-price">¥${med.price.toFixed(2)}</div>
+                ${user.isMember ? `<div class="med-points">最多可抵扣¥${maxDeduction.toFixed(2)} (需${pointsNeeded}积分)</div>` : ''}
+                <button class="add-to-cart" onclick="addToCart(${med.id})">加入购物车</button>
+            `;
+            
+            return div;
+        }
+
+        // 打开模态框
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        // 关闭模态框
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // 发送验证码
+        function sendCode() {
+            alert('验证码已发送到您的手机');
+        }
+
+        // 登录
+        function login() {
+            const phone = document.getElementById('phone').value;
+            if (!phone) {
+                alert('请输入手机号');
+                return;
+            }
+            
+            user.isLoggedIn = true;
+            user.isMember = Math.random() > 0.5; // 随机决定是否为会员
+            user.points = 500; // 演示用，登录后给500积分
+            
+            document.getElementById('loginButton').style.display = 'none';
+            document.getElementById('userPoints').style.display = 'inline';
+            document.getElementById('userPoints').textContent = `积分: ${user.points}`;
+            
+            if (user.isMember) {
+                document.getElementById('memberBadge').style.display = 'inline';
+            }
+            
+            closeModal('loginModal');
+            renderMedicines(); // 重新渲染药品以显示会员信息
+            alert('登录成功！');
+        }
+
+        // 添加到购物车
+        function addToCart(medId) {
+            if (!user.isLoggedIn) {
+                openModal('loginModal');
+                return;
+            }
+            
+            const med = medicines.find(m => m.id === medId);
+            const existingItem = user.cart.find(item => item.id === medId);
+            
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                user.cart.push({
+                    id: med.id,
+                    name: med.name,
+                    price: med.price,
+                    image: med.image,
+                    isPrescription: med.isPrescription,
+                    quantity: 1
+                });
+            }
+            
+            updateCartCount();
+            alert(`${med.name} 已添加到购物车`);
+        }
+
+        // 更新购物车数量显示
+        function updateCartCount() {
+            const cartCount = user.cart.reduce((sum, item) => sum + item.quantity, 0);
+            const cartNav = document.querySelector('.bottom-nav .nav-item:nth-child(2)');
+            
+            if (cartCount > 0) {
+                cartNav.innerHTML = `
+                    <div class="nav-icon">🛒<span style="position: absolute; top: -5px; right: -5px; background: red; color: white; border-radius: 50%; width: 16px; height: 16px; font-size: 10px; display: flex; align-items: center; justify-content: center;">${cartCount}</span></div>
+                    <div>购物车</div>
+                `;
+            } else {
+                cartNav.innerHTML = `
+                    <div class="nav-icon">🛒</div>
+                    <div>购物车</div>
+                `;
+            }
+        }
+
+        // 打开购物车
+        function openCart() {
+            if (!user.isLoggedIn) {
+                openModal('loginModal');
+                return;
+            }
+            
+            const cartItems = document.getElementById('cartItems');
+            cartItems.innerHTML = '';
+            
+            if (user.cart.length === 0) {
+                cartItems.innerHTML = '<p style="text-align: center; padding: 20px;">购物车为空</p>';
+                document.getElementById('cartTotal').textContent = '¥0.00';
+                return;
+            }
+            
+            let total = 0;
+            user.cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                
+                const div = document.createElement('div');
+                div.className = 'cart-item';
+                div.innerHTML = `
+                    <div class="cart-item-info">
+                        <div class="cart-item-name">${item.name}</div>
+                        <div class="cart-item-price">¥${item.price.toFixed(2)} × ${item.quantity}</div>
+                    </div>
+                    <div class="cart-item-actions">
+                        <button class="quantity-btn" onclick="updateQuantity(${item.id}, -1)">-</button>
+                        <span>${item.quantity}</span>
+                        <button class="quantity-btn" onclick="updateQuantity(${item.id}, 1)">+</button>
+                    </div>
+                `;
+                cartItems.appendChild(div);
+            });
+            
+            document.getElementById('cartTotal').textContent = `¥${total.toFixed(2)}`;
+            openModal('cartModal');
+        }
+
+        // 更新购物车商品数量
+        function updateQuantity(medId, change) {
+            const item = user.cart.find(item => item.id === medId);
+            if (item) {
+                item.quantity += change;
+                if (item.quantity <= 0) {
+                    user.cart = user.cart.filter(i => i.id !== medId);
+                }
+                openCart(); // 重新打开购物车以更新显示
+                updateCartCount();
+            }
+        }
+
+        // 结算
+        function checkout() {
+            if (user.cart.length === 0) {
+                alert('购物车为空');
+                return;
+            }
+            
+            const orderItems = document.getElementById('orderItems');
+            orderItems.innerHTML = '';
+            
+            let total = 0;
+            user.cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                
+                const div = document.createElement('div');
+                div.className = 'cart-item';
+                div.innerHTML = `
+                    <div class="cart-item-info">
+                        <div class="cart-item-name">${item.name}</div>
+                        <div class="cart-item-price">¥${item.price.toFixed(2)} × ${item.quantity}</div>
+                    </div>
+                    <div>¥${itemTotal.toFixed(2)}</div>
+                `;
+                orderItems.appendChild(div);
+            });
+            
+            document.getElementById('orderTotal').textContent = `¥${total.toFixed(2)}`;
+            
+            // 计算积分抵扣
+            const pointsDeduction = document.getElementById('pointsDeduction');
+            if (user.isMember && user.points > 0) {
+                const maxDeductible = total * 0.5; // 最多抵扣50%
+                const pointsValue = Math.min(user.points / 10, maxDeductible); // 10积分=1元
+                const finalAmount = total - pointsValue;
+                
+                pointsDeduction.innerHTML = `
+                    <div>可用积分: ${user.points}</div>
+                    <div>可抵扣: ¥${pointsValue.toFixed(2)}</div>
+                    <div>实付金额: ¥${finalAmount.toFixed(2)}</div>
+                `;
+            } else {
+                pointsDeduction.innerHTML = user.isMember ? 
+                    '<div>暂无可用积分</div>' : 
+                    '<div>非会员无法使用积分抵扣</div>';
+            }
+            
+            closeModal('cartModal');
+            openModal('orderModal');
+        }
+
+        // 提交订单
+        function submitOrder() {
+            const address = document.getElementById('address').value;
+            if (!address) {
+                alert('请输入收货地址');
+                return;
+            }
+            
+            // 检查是否有处方药
+            const hasPrescriptionDrug = user.cart.some(item => item.isPrescription);
+            
+            if (hasPrescriptionDrug) {
+                closeModal('orderModal');
+                openModal('prescriptionModal');
+            } else {
+                proceedToPayment();
+            }
+        }
+
+        // 提交处方申请
+        function submitPrescription() {
+            const symptoms = document.getElementById('symptoms').value;
+            if (!symptoms) {
+                alert('请选择症状');
+                return;
+            }
+            
+            alert('处方申请已提交，医生将尽快为您开具电子处方');
+            closeModal('prescriptionModal');
+            proceedToPayment();
+        }
+
+        // 进行支付
+        function proceedToPayment() {
+            let total = user.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            // 计算积分抵扣
+            if (user.isMember && user.points > 0) {
+                const maxDeductible = total * 0.5;
+                const pointsValue = Math.min(user.points / 10, maxDeductible);
+                total -= pointsValue;
+                
+                // 扣除积分
+                user.points -= pointsValue * 10;
+                document.getElementById('userPoints').textContent = `积分: ${user.points}`;
+            }
+            
+            document.getElementById('paymentAmount').textContent = `¥${total.toFixed(2)}`;
+            
+            // 创建订单
+            const order = {
+                id: Date.now(),
+                items: [...user.cart],
+                total: total,
+                address: document.getElementById('address').value,
+                status: '待支付',
+                date: new Date().toLocaleDateString()
+            };
+            
+            user.orders.push(order);
+            user.cart = [];
+            updateCartCount();
+            
+            closeModal('orderModal');
+            openModal('paymentModal');
+        }
+
+        // 完成支付
+        function completePayment() {
+            // 更新最新订单状态
+            if (user.orders.length > 0) {
+                user.orders[user.orders.length - 1].status = '已支付';
+            }
+            
+            closeModal('paymentModal');
+            alert('支付成功！订单已提交药房处理');
+        }
+
+        // 查看订单
+        function viewOrders() {
+            if (!user.isLoggedIn) {
+                openModal('loginModal');
+                return;
+            }
+            
+            const orderDetailContent = document.getElementById('orderDetailContent');
+            orderDetailContent.innerHTML = '';
+            
+            if (user.orders.length === 0) {
+                orderDetailContent.innerHTML = '<p style="text-align: center; padding: 20px;">暂无订单</p>';
+            } else {
+                user.orders.forEach(order => {
+                    const div = document.createElement('div');
+                    div.style.borderBottom = '1px solid #eee';
+                    
