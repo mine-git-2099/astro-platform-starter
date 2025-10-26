@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>广西工会购药商城</title>
+    <!-- Load Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Configure Tailwind theme for Red/White theme and Inter font -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-red': '#dc2626', // Tailwind red-600
+                        'secondary-red': '#f87171', // Tailwind red-400
+                        'light-bg': '#fefefe',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'Noto Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar for webkit browsers for a cleaner look */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        /* Mobile-first base styles */
+        body {
+            -webkit-overflow-scrolling: touch;
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f7;
+        }
+        /* Ensure content is below header and above footer */
+        .content-area {
+            padding-top: 56px; /* Header height */
+            padding-bottom: 64px; /* Footer height */
+            min-height: 100vh;
+        }
+        /* Custom class for the pharmacy logo/icon */
+        .pill-icon {
+            font-size: 24px;
+            color: #dc2626;
+            margin-right: 8px;
+        }
+        /* Style for the fixed bottom navigation */
+        .nav-button {
+            transition: all 0.2s;
+            box-shadow: none;
+        }
+        .nav-button:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Main App Container -->
+    <div id="app" class="relative w-full max-w-md mx-auto bg-light-bg shadow-xl min-h-screen overflow-hidden">
+        
+        <!-- Fixed Header -->
+        <header id="app-header" class="fixed top-0 w-full max-w-md bg-primary-red text-white p-3 z-10 shadow-lg flex justify-between items-center transition-all">
+            <h1 class="text-xl font-bold flex items-center">
+                <span class="pill-icon text-white transform rotate-45 mr-2">💊</span>工会购药商城
+            </h1>
+            <button onclick="logout()" id="logout-btn" class="text-sm border border-white px-2 py-1 rounded-full hover:bg-white hover:text-primary-red transition-colors hidden">
+                退出
+            </button>
+        </header>
+
+        <!-- Main View Rendering Area -->
+        <main id="view-container" class="content-area overflow-y-auto"></main>
+        
+        <!-- Fixed Bottom Navigation (Hidden initially) -->
+        <nav id="app-footer" class="fixed bottom-0 w-full max-w-md bg-white border-t border-gray-200 shadow-2xl z-10 flex justify-around p-2 hidden">
+            <button class="flex flex-col items-center text-xs text-gray-700 nav-button" onclick="navigate('home')">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                首页
+            </button>
+            <button class="flex flex-col items-center text-xs text-gray-700 nav-button" onclick="navigate('orders')">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                订单
+            </button>
+            <button class="relative flex flex-col items-center text-xs text-primary-red nav-button" onclick="navigate('cart')">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                <span id="cart-count" class="absolute top-0 right-1 bg-primary-red text-white rounded-full h-4 w-4 text-xs flex items-center justify-center opacity-0 transition-opacity">0</span>
+                购物车
+            </button>
+            <button class="flex flex-col items-center text-xs text-gray-700 nav-button" onclick="navigate('customerService')">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 0A7.25 7.25 0 0112 21.75c-3.9 0-7.25-3.35-7.25-7.25S8.1 7.25 12 7.25c3.9 0 7.25 3.35 7.25 7.25S15.9 21.75 12 21.75zm-3.536-3.536L5.636 18.364"></path></svg>
+                客服
+            </button>
+            <button class="flex flex-col items-center text-xs text-gray-700 nav-button" onclick="navigate('profile')">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                我的
+            </button>
+        </nav>
+        
+        <!-- Modal for Message/Confirmation -->
+        <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+            <div class="bg-white p-6 rounded-lg shadow-2xl w-full max-w-xs text-center">
+                <h3 id="modal-title" class="text-lg font-bold mb-3 text-primary-red">提示</h3>
+                <p id="modal-body" class="text-gray-700 mb-4"></p>
+                <button onclick="closeModal()" class="bg-primary-red text-white px-4 py-2 rounded-lg w-full hover:opacity-90 transition-opacity">
+                    确定
+                </button>
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        // --- Global State Management ---
+        let state = {
+            view: 'login',
+            user: null, // {id, name, isMember, points}
+            cart: [], // [{product, quantity, id}]
+            orders: [],
+            currentOrder: null, // Used during checkout flow
+        };
+
+        const TEST_USERS = {
+            'u1': { id: 'u1', name: '会员用户A', isMember: true, points: 500, password: '' },
+            'u2': { id: 'u2', name: '非会员用户B', isMember: false, points: 0, password: '' },
+            'u3': { id: 'u3', name: '新用户C', isMember: false, points: 0, password: '' },
+        };
+
+        const PRODUCTS = [
+            { id: 1, name: '感冒灵颗粒', img: '💊', price: 25.00, member_price: 20.00, is_prescription: false, category: '感冒用药', tags: ['冬季推荐', '热门'] },
+            { id: 2, name: '维生素C片', img: '🍊', price: 12.50, member_price: 10.00, is_prescription: false, category: '维生素', tags: ['中年推荐', '热门'] },
+            { id: 3, name: '阿莫西林胶囊', img: '💊', price: 35.00, member_price: 30.00, is_prescription: true, category: '抗生素', tags: ['处方药'] },
+            { id: 4, name: '小儿退烧贴', img: '👶', price: 18.00, member_price: 15.00, is_prescription: false, category: '儿科用药', tags: ['儿科', '热门'] },
+            { id: 5, name: '钙片', img: '🥛', price: 55.00, member_price: 45.00, is_prescription: false, category: '维生素', tags: ['中年推荐', '女性'] },
+            { id: 6, name: '藿香正气水', img: '🌿', price: 10.00, member_price: 8.00, is_prescription: false, category: '肠胃用药', tags: ['夏季推荐'] }
+        ];
+
+        const CATEGORIES = ['感冒用药', '维生素', '儿科用药', '肠胃用药', '抗生素', '中成药'];
+        
+        // --- Utility Functions ---
+
+        /**
+         * Navigates to a new view and renders it.
+         * @param {string} viewName - The name of the view to navigate to.
+         * @param {Object} [data=null] - Optional data to pass to the view renderer.
+         */
+        function navigate(viewName, data = null) {
+            state.view = viewName;
+            renderView(data);
+        }
+
+        function showMessage(title, message, isHtml = false) {
+            document.getElementById('modal-title').textContent = title;
+            if (isHtml) {
+                document.getElementById('modal-body').innerHTML = message;
+            } else {
+                document.getElementById('modal-body').textContent = message;
+            }
+            document.getElementById('modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+
+        // --- Auth Logic ---
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const user = TEST_USERS[username];
+
+            if (user) {
+                state.user = { ...user }; // Copy user data to state
+                document.getElementById('logout-btn').classList.remove('hidden');
+                document.getElementById('app-footer').classList.remove('hidden');
+                navigate('home');
+            } else {
+                showMessage('登录失败', '测试账号不存在，请使用 u1 (会员) 或 u2/u3 (非会员) 登录。');
+            }
+        }
+
+        function logout() {
+            state.user = null;
+            state.cart = [];
+            document.getElementById('logout-btn').classList.add('hidden');
+            document.getElementById('app-footer').classList.add('hidden');
+            navigate('login');
+        }
+
+        // --- Cart Logic ---
+
+        function updateCartCount() {
+            const count = state.cart.reduce((sum, item) => sum + item.quantity, 0);
+            const countEl = document.getElementById('cart-count');
+            countEl.textContent = count;
+            if (count > 0) {
+                countEl.classList.remove('opacity-0');
+                countEl.classList.add('bg-primary-red');
+            } else {
+                countEl.classList.add('opacity-0');
+                countEl.classList.remove('bg-primary-red');
+            }
+        }
+
+        function addToCart(productId) {
+            const product = PRODUCTS.find(p => p.id === productId);
+            if (!product) return;
+
+            const existingItem = state.cart.find(item => item.id === productId);
+
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                state.cart.push({ ...product, quantity: 1, id: productId });
+            }
+            updateCartCount();
+            showMessage('成功', `${product.name} 已加入购物车!`);
+        }
+
+        function updateCartItemQuantity(productId, quantity) {
+            const item = state.cart.find(i => i.id === productId);
+            if (item) {
+                item.quantity = Math.max(1, quantity);
+                renderView(); // Re-render cart view
+            }
+        }
+
+        function removeCartItem(productId) {
+            state.cart = state.cart.filter(item => item.id !== productId);
+            updateCartCount();
+            renderView(); // Re-render cart view
+        }
+        
+        function calculateCartTotals() {
+            let subtotal = 0;
+            let totalAvailablePoints = 0;
+            let maxDeduction = 0;
+            const isMember = state.user && state.user.isMember;
+
+            state.cart.forEach(item => {
+                const price = isMember ? item.member_price : item.price;
+                const itemTotal = price * item.quantity;
+                subtotal += itemTotal;
+
+                if (isMember) {
+                    // Max deduction is 50% of the item's price
+                    const itemMaxDeduction = itemTotal * 0.5;
+                    maxDeduction += itemMaxDeduction;
+                }
+            });
+
+            // Total points available to use
+            if (isMember) {
+                totalAvailablePoints = Math.floor(state.user.points);
+            }
+
+            // Max deduction in points (10 points = 1 Yuan)
+            const maxDeductionPoints = Math.min(totalAvailablePoints, maxDeduction * 10);
+            
+            return { subtotal, maxDeduction, maxDeductionPoints, isMember };
+        }
+
+
+        // --- View Rendering Logic ---
+
+        const viewContainer = document.getElementById('view-container');
+
+        /**
+         * Renders the current view based on state.view.
+         */
+        function renderView(data = null) {
+            if (!state.user && state.view !== 'login') {
+                return navigate('login'); // Force login if not authenticated
+            }
+            
+            viewContainer.scrollTop = 0; // Scroll to top on view change
+            
+            switch (state.view) {
+                case 'login':
+                    viewContainer.innerHTML = renderLoginView();
+                    break;
+                case 'home':
+                    viewContainer.innerHTML = renderHomeView();
+                    break;
+                case 'cart':
+                    viewContainer.innerHTML = renderCartView();
+                    break;
+                case 'checkout':
+                    viewContainer.innerHTML = renderCheckoutView();
+                    break;
+                case 'prescriptionSupplement':
+                    viewContainer.innerHTML = renderPrescriptionSupplementView(data);
+                    break;
+                case 'paymentResult':
+                    viewContainer.innerHTML = renderPaymentResultView(data);
+                    break;
+                case 'orders':
+                    viewContainer.innerHTML = renderOrderHistoryView();
+                    break;
+                case 'customerService':
+                    viewContainer.innerHTML = renderCustomerServiceView();
+                    break;
+                case 'profile':
+                    viewContainer.innerHTML = renderProfileView();
+                    break;
+                default:
+                    viewContainer.innerHTML = '<h2>404 View Not Found</h2>';
+            }
+            // Update header title based on view
+            const headerTitle = document.querySelector('#app-header h1');
+            const titles = {
+                'home': '工会购药商城',
+                'cart': '购物车',
+                'checkout': '结算中心',
+                'prescriptionSupplement': '处方补方',
+                'paymentResult': '支付结果',
+                'orders': '我的订单',
+                'customerService': '在线客服',
+                'profile': '我的'
+            };
+            if (state.view !== 'login') {
+                headerTitle.innerHTML = `<span class="pill-icon text-white transform rotate-45 mr-2">💊</span>${titles[state.view] || '商城'}`;
+            } else {
+                 headerTitle.innerHTML = `<span class="pill-icon text-white transform rotate-45 mr-2">💊</span>工会购药商城`;
+            }
+        }
+
+        // --- View HTML Templates ---
+
+        function renderLoginView() {
+            return `
+                <div class="flex flex-col items-center justify-center h-full pt-16 p-6">
+                    <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-xs transition-all duration-300">
+                        <h2 class="text-3xl font-bold mb-6 text-center text-primary-red">工会登录</h2>
+                        <p class="text-gray-500 text-sm mb-6 text-center">请使用以下测试账号登录:</p>
+                        <ul class="text-sm text-gray-600 mb-6 space-y-1 bg-gray-50 p-3 rounded-lg border border-gray-200">
+                            <li><strong>u1:</strong> 会员 (500 积分)</li>
+                            <li><strong>u2:</strong> 非会员</li>
+                            <li><strong>u3:</strong> 非会员</li>
+                        </ul>
+                        
+                        <div class="mb-4">
+                            <label for="username" class="block text-sm font-medium text-gray-700 mb-1">工会账号 (u1/u2/u3)</label>
+                            <input type="text" id="username" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary-red focus:border-primary-red transition duration-150" value="u1" placeholder="u1 / u2 / u3">
+                        </div>
+                        <div class="mb-6">
+                            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">密码 (空)</label>
+                            <input type="password" id="password" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed" value="" readonly>
+                        </div>
+                        <button onclick="login()" class="w-full bg-primary-red text-white py-3 rounded-xl text-lg font-semibold shadow-lg hover:bg-secondary-red transition-all duration-200 transform hover:scale-105">
+                            立即登录
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderProductCard(product) {
+            const isMember = state.user && state.user.isMember;
+            const priceToDisplay = isMember ? product.member_price : product.price;
+            const originalPriceDisplay = isMember ? `<span class="text-xs line-through text-gray-400">¥${product.price.toFixed(2)}</span>` : '';
+            
+            let deductionInfo = '';
+            if (isMember) {
+                const maxDeductible = (product.member_price * 0.5).toFixed(2);
+                const maxPoints = (maxDeductible * 10).toFixed(0);
+                deductionInfo = `
+                    <p class="text-xs text-green-600 font-medium mt-1">
+                        🎁 最多抵扣 ¥${maxDeductible} (${maxPoints} 积分)
+                    </p>
+                `;
+            }
+
+            return `
+                <div class="bg-white p-4 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow duration-300">
+                    <div class="text-4xl text-center mb-2">${product.img}</div>
+                    <h3 class="font-semibold text-gray-800 text-base mb-1 truncate">${product.name}</h3>
+                    <p class="text-xs text-gray-500 mb-2">${product.tags.join(' | ')}</p>
+                    
+                    <div class="flex items-end justify-between">
+                        <div>
+                            <p class="text-xl font-bold ${isMember ? 'text-primary-red' : 'text-gray-800'}">
+                                ¥${priceToDisplay.toFixed(2)}
+                            </p>
+                            ${originalPriceDisplay}
+                            ${deductionInfo}
+                        </div>
+                        <button onclick="addToCart(${product.id})" class="bg-primary-red text-white p-2 rounded-full shadow-md hover:bg-secondary-red transition-colors text-sm">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderHomeView() {
+            const isMember = state.user.isMember;
+            const memberInfo = isMember ? 
+                `<div class="flex items-center space-x-2 text-sm">
+                    <span class="bg-yellow-500 text-white px-2 py-0.5 rounded-full font-bold">VIP 会员</span>
+                    <span class="text-primary-red">当前积分: ${state.user.points}</span>
+                </div>` : 
+                `<span class="text-sm text-gray-500">登录身份: 普通用户</span>`;
+
+            // Simple recommendation logic (e.g., Winter/Female/Middle Age)
+            const recommendedProducts = PRODUCTS.filter(p => p.tags.includes('热门') || p.tags.includes('冬季推荐') || p.tags.includes('中年推荐') || p.tags.includes('儿科')).slice(0, 4);
+            const otherProducts = PRODUCTS.filter(p => !recommendedProducts.includes(p));
+
+            let html = `
+                <div class="p-4 pt-4 space-y-4">
+                    <!-- User/Member Info Banner -->
+                    <div class="bg-white p-3 rounded-xl shadow-lg border-l-4 border-primary-red">
+                        <p class="text-lg font-bold text-gray-800">${state.user.name}，欢迎回来!</p>
+                        ${memberInfo}
+                    </div>
+
+                    <!-- 个性化推荐 -->
+                    <h2 class="text-xl font-bold text-gray-800 border-l-4 border-primary-red pl-2">💡 个性化推荐</h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        ${recommendedProducts.map(renderProductCard).join('')}
+                    </div>
+
+                    <!-- 底部全量分类 (Collapsible) -->
+                    <h2 class="text-xl font-bold text-gray-800 border-l-4 border-primary-red pl-2">🛒 所有药品</h2>
+                    <div id="full-categories" class="space-y-3">
+                        <!-- Simplified Category List -->
+                        ${CATEGORIES.map(cat => `
+                            <div class="bg-white p-4 rounded-xl shadow-md cursor-pointer border border-gray-200" onclick="toggleCategory('${cat}')">
+                                <h3 class="font-bold text-lg text-primary-red">${cat} (${PRODUCTS.filter(p => p.category === cat).length})</h3>
+                                <div id="cat-${cat}" class="product-list grid grid-cols-1 gap-4 mt-3 hidden">
+                                    ${PRODUCTS.filter(p => p.category === cat).map(renderProductCard).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            return html;
+        }
+
+        function toggleCategory(categoryName) {
+            const list = document.getElementById(`cat-${categoryName}`);
+            list.classList.toggle('hidden');
+        }
+
+        function renderCartView() {
+            const { subtotal, maxDeduction, maxDeductionPoints, isMember } = calculateCartTotals();
+            const hasPrescription = state.cart.some(item => item.is_prescription);
+
+            if (state.cart.length === 0) {
+                return `
+                    <div class="flex flex-col items-center justify-center h-full pt-16 p-6">
+                        <div class="text-6xl mb-4 text-gray-300">🛒</div>
+                        <p class="text-xl text-gray-500 mb-6">您的购物车是空的</p>
+                        <button onclick="navigate('home')" class="bg-primary-red text-white px-6 py-3 rounded-full text-lg font-semibold shadow-lg hover:bg-secondary-red transition-colors">
+                            去商城逛逛
+                        </button>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="p-4 pt-16 space-y-4">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 border-l-4 border-primary-red pl-2">我的购物车 (${state.cart.length})</h2>
+                    
+                    <!-- Cart Items -->
+                    <div class="space-y-3">
+                        ${state.cart.map(item => `
+                            <div class="flex items-center bg-white p-3 rounded-xl shadow-md border border-gray-200">
+                                <div class="text-3xl mr-3">${item.img}</div>
+                                <div class="flex-grow">
+                                    <h3 class="font-semibold text-gray-800">${item.name}</h3>
+                                    <p class="text-primary-red font-bold">¥${(isMember ? item.member_price : item.price).toFixed(2)}</p>
+                                    ${isMember ? `<p class="text-xs text-green-600">会员价：¥${item.member_price.toFixed(2)}</p>` : ''}
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <button onclick="updateCartItemQuantity(${item.id}, ${item.quantity - 1})" class="text-gray-500 border rounded-full w-6 h-6">-</button>
+                                    <span class="text-lg font-medium">${item.quantity}</span>
+                                    <button onclick="updateCartItemQuantity(${item.id}, ${item.quantity + 1})" class="text-primary-red border border-primary-red rounded-full w-6 h-6">+</button>
+                                    <button onclick="removeCartItem(${item.id})" class="text-gray-400 hover:text-primary-red">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <!-- Summary -->
+                    <div class="bg-white p-4 rounded-xl shadow-lg space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">商品总价:</span>
+                            <span class="font-bold text-lg">¥${subtotal.toFixed(2)}</span>
+                        </div>
+                        ${isMember ? `
+                            <div class="text-sm text-green-600">
+                                🏅 可用积分抵扣上限: ¥${maxDeduction.toFixed(2)} (共 ${maxDeductionPoints} 积分)
+                            </div>
+                        ` : ''}
+                        ${hasPrescription ? `
+                            <p class="text-xs text-orange-500 font-medium pt-2 border-t border-dashed">
+                                <span class="font-bold">注意:</span> 订单包含处方药💊，结算时需完成线上补方。
+                            </p>
+                        ` : ''}
+                    </div>
+                </div>
+
+                <!-- Fixed Checkout Bar -->
+                <div class="fixed bottom-16 w-full max-w-md bg-white p-3 border-t border-gray-200 shadow-2xl flex justify-between items-center">
+                    <div>
+                        <span class="text-gray-600">应付总额:</span>
+                        <span class="text-2xl font-bold text-primary-red ml-1">¥${subtotal.toFixed(2)}</span>
+                    </div>
+                    <button onclick="navigate('checkout')" class="bg-primary-red text-white px-6 py-3 rounded-full text-lg font-semibold shadow-lg hover:bg-secondary-red transition-all">
+                        去结算
+                    </button>
+                </div>
+            `;
+        }
+        
+        function renderCheckoutView() {
+            const { subtotal, maxDeduction, maxDeductionPoints, isMember } = calculateCartTotals();
+            const hasPrescription = state.cart.some(item => item.is_prescription);
+
+            // Initialize/reset checkout state for this view
+            state.currentOrder = {
+                items: state.cart,
+                subtotal: subtotal,
+                pointsUsed: 0,
+                deduction: 0,
+                finalAmount: subtotal,
+                address: '广西壮族自治区南宁市xxx街道',
+                hasPrescription: hasPrescription,
+                isPrescriptionSupplemented: !hasPrescription,
+                status: '待付款',
+                trackingId: Math.random().toString(36).substring(2, 11).toUpperCase()
+            };
+
+            const pointSection = isMember ? `
+                <div class="bg-white p-4 rounded-xl shadow-lg space-y-2">
+                    <h3 class="text-lg font-bold text-gray-800 border-l-4 border-green-500 pl-2">积分抵扣 (10积分 = 1元)</h3>
+                    <div class="text-sm text-gray-600">
+                        可用积分: ${state.user.points} | 最多可抵扣: ¥${maxDeduction.toFixed(2)} (${maxDeductionPoints} 积分)
+                    </div>
+                    <div class="flex space-x-2 items-center">
+                        <label for="points-input" class="text-gray-700">使用积分:</label>
+                        <input type="number" id="points-input" class="flex-grow px-3 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" 
+                                value="0" min="0" max="${maxDeductionPoints}" oninput="updateDeduction(this.value)">
+                        <button onclick="updateDeduction(${maxDeductionPoints})" class="bg-green-500 text-white text-xs px-3 py-1 rounded-full hover:bg-green-600">
+                            全额抵扣
+                        </button>
+                    </div>
+                    <p class="text-sm text-green-600 font-bold mt-2">积分抵扣金额: <span id="deduction-amount">¥0.00</span></p>
+                </div>
+            ` : '';
+
+            let prescriptionNotice = '';
+            if (hasPrescription) {
+                 prescriptionNotice = `
+                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-xl mt-4">
+                        <p class="font-bold">⚠️ 处方药警告</p>
+                        <p class="text-sm">您的订单包含处方药，需要先进行在线补方审核才能继续支付。</p>
+                    </div>
+                 `;
+            }
+
+            return `
+                <div class="p-4 pt-16 space-y-4">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 border-l-4 border-primary-red pl-2">结算信息</h2>
+                    
+                    <!-- Address Card -->
+                    <div class="bg-white p-4 rounded-xl shadow-lg space-y-2 border-l-4 border-blue-500">
+                        <h3 class="text-lg font-bold text-gray-800">收货地址</h3>
+                        <p class="text-gray-700 font-medium">收件人: ${state.user.name} (工会用户)</p>
+                        <p class="text-sm text-gray-500">${state.currentOrder.address}</p>
+                        <button class="text-blue-500 text-sm hover:text-blue-700">修改地址 (模拟)</button>
+                    </div>
+
+                    <!-- Item List -->
+                    <div class="bg-white p-4 rounded-xl shadow-lg space-y-2">
+                        <h3 class="text-lg font-bold text-gray-800 border-l-4 border-primary-red pl-2">商品清单 (${state.cart.length} 件)</h3>
+                        ${state.cart.map(item => `
+                            <div class="flex justify-between text-sm py-1 border-b border-gray-100 last:border-b-0">
+                                <span class="text-gray-700">${item.name} x ${item.quantity}</span>
+                                <span class="font-medium">¥${((isMember ? item.member_price : item.price) * item.quantity).toFixed(2)}</span>
+                            </div>
+                        `).join('')}
+                        <div class="flex justify-between font-bold pt-2 border-t border-gray-200">
+                            <span>商品总计</span>
+                            <span>¥${subtotal.toFixed(2)}</span>
+                        </div>
+                    </div>
+
+                    <!-- Point Deduction Section -->
+                    ${pointSection}
+                    
+                    <!-- Prescription Notice -->
+                    ${prescriptionNotice}
+
+                    <!-- Final Summary (Placeholders) -->
+                    <div class="bg-white p-4 rounded-xl shadow-lg space-y-2 text-right">
+                        <div class="text-gray-600">积分抵扣: <span id="summary-deduction">- ¥0.00</span></div>
+                        <div class="text-2xl font-bold text-primary-red pt-2 border-t border-gray-200">
+                            实付金额: <span id="final-amount">¥${subtotal.toFixed(2)}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fixed Payment Bar -->
+                <div class="fixed bottom-16 w-full max-w-md bg-white p-3 border-t border-gray-200 shadow-2xl flex justify-between items-center">
+                    <div>
+                        <span class="text-gray-600">总计:</span>
+                        <span id="payment-bar-amount" class="text-2xl font-bold text-primary-red ml-1">¥${subtotal.toFixed(2)}</span>
+                    </div>
+                    <button onclick="processOrder()" class="bg-primary-red text-white px-6 py-3 rounded-full text-lg font-semibold shadow-lg hover:bg-secondary-red transition-all">
+                        提交订单
+                    </button>
+                </div>
+            `;
+        }
+
+        // Checkout helper function to update deduction fields
+        function updateDeduction(points) {
+            const pointsInput = document.getElementById('points-input');
+            const { subtotal, maxDeductionPoints, isMember } = calculateCartTotals();
+            
+            if (!isMember) return;
+
+            // 1. Validate and cap points usage
+            let pointsToUse = parseInt(points) || 0;
+            pointsToUse = Math.min(pointsToUse, state.user.points); // Cap by user's total points
+            pointsToUse = Math.min(pointsToUse, maxDeductionPoints); // Cap by max item deduction limit
+            
+            pointsInput.value = pointsToUse;
+            
+            // 2. Calculate deduction amount (10 points = 1 Yuan)
+            const deductionAmount = pointsToUse / 10;
+            const finalAmount = subtotal - deductionAmount;
+            
+            // 3. Update state
+            state.currentOrder.pointsUsed = pointsToUse;
+            state.currentOrder.deduction = deductionAmount;
+            state.currentOrder.finalAmount = finalAmount;
+
+            // 4. Update UI
+            document.getElementById('deduction-amount').textContent = `¥${deductionAmount.toFixed(2)}`;
+            document.getElementById('summary-deduction').textContent = `- ¥${deductionAmount.toFixed(2)}`;
+            document.getElementById('final-amount').textContent = `¥${finalAmount.toFixed(2)}`;
+            document.getElementById('payment-bar-amount').textContent = `¥${finalAmount.toFixed(2)}`;
+        }
+
+        function processOrder() {
+            if (!state.currentOrder) return showMessage('错误', '订单信息缺失。');
+            
+            // Check for prescription and required supplement step
+            if (state.currentOrder.hasPrescription && !state.currentOrder.isPrescriptionSupplemented) {
+                // If it has prescription but hasn't supplemented, go to supplement view
+                return navigate('prescriptionSupplement', state.currentOrder);
+            }
+
+            // Proceed to final payment (simulate)
+            const order = { ...state.currentOrder };
+            order.date = new Date().toLocaleString('zh-CN');
+            
+            // Update user points
+            if (state.user.isMember) {
+                state.user.points -= order.pointsUsed;
+            }
+
+            // Move to payment page
+            navigate('paymentResult', { success: true, order: order });
+            
+            // Clear cart and current order state
+            state.cart = [];
+            state.currentOrder = null;
+            updateCartCount();
+        }
+
+        function renderPrescriptionSupplementView(order) {
+            if (!order || !order.hasPrescription) return navigate('checkout');
+
+            // Find the prescription items for display
+            const prescriptionItems = order.items.filter(item => item.is_prescription);
+
+            return `
+                <div class="p-4 pt-16 space-y-6">
+                    <h2 class="text-2xl font-bold text-primary-red mb-4 border-l-4 border-primary-red pl-2">📝 处方药补方流程</h2>
+                    
+                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-xl">
+                        <p class="font-bold">重要提示：</p>
+                        <p class="text-sm">根据国家规定，购买处方药需凭电子处方。请配合完成以下健康信息采集，我们将模拟在线医生为您开具处方。</p>
+                    </div>
+
+                    <!-- Prescription Items List -->
+                    <div class="bg-white p-4 rounded-xl shadow-lg">
+                        <h3 class="font-bold text-lg mb-3">待补方药品:</h3>
+                        ${prescriptionItems.map(item => `<p class="text-sm text-gray-700">💊 ${item.name} x ${item.quantity}</p>`).join('')}
+                    </div>
+
+                    <!-- Health Questionnaire (Simplified) -->
+                    <div class="bg-white p-4 rounded-xl shadow-lg space-y-4">
+                        <h3 class="font-bold text-lg mb-3">健康信息 (请勾选):</h3>
+                        
+                        <div class="space-y-3" id="health-options">
+                            <label class="flex items-center text-gray-700">
+                                <input type="checkbox" name="health" value="symptom1" class="form-checkbox text-primary-red rounded mr-2">
+                                <span>目前有轻微咳嗽/喉咙痛症状</span>
+                            </label>
+                            <label class="flex items-center text-gray-700">
+                                <input type="checkbox" name="health" value="history" class="form-checkbox text-primary-red rounded mr-2">
+                                <span>既往无药物过敏史</span>
+                            </label>
+                            <label class="flex items-center text-gray-700">
+                                <input type="checkbox" name="health" value="pregnant" class="form-checkbox text-primary-red rounded mr-2">
+                                <span>非孕妇或哺乳期妇女</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Simulated Doctor's Review & Submit -->
+                    <button onclick="simulatePrescriptionReview()" class="w-full bg-primary-red text-white py-3 rounded-xl text-lg font-semibold shadow-lg hover:bg-secondary-red transition-all transform hover:scale-105">
+                        提交健康信息，生成电子处方
+                    </button>
+                    
+                </div>
+            `;
+        }
+
+        function simulatePrescriptionReview() {
+            // Check if at least one option is checked (simple validation)
+            const options = document.querySelectorAll('#health-options input:checked');
+            if (options.length === 0) {
+                return showMessage('提示', '请至少勾选一个健康信息选项以便医生审核。');
+            }
+
+            // Simulate prescription approval
+            showMessage('补方成功', '👩‍⚕️ 您的健康信息已通过在线医生审核，电子处方已开具。您可以继续支付了。');
+            
+            // Update order state to reflect supplementation is done
+            state.currentOrder.isPrescriptionSupplemented = true;
+            
+            // Go back to checkout to finalize
+            navigate('checkout');
+        }
+
+        function renderPaymentResultView(data) {
+            const { success, order } = data;
+            const icon = success ? '✅' : '❌';
+            const title = success ? '支付成功!' : '支付失败';
+            const message = success ? 
+                `您的订单 (¥${order.finalAmount.toFixed(2)}) 已成功提交，我们将尽快为您发货！` : 
+                '支付过程中发生错误，请重新尝试。';
+
+            if (success) {
+                // Add the successful order to history
+                state.orders.unshift(order);
+            }
+
+            return `
+                <div class="flex flex-col items-center justify-center h-full pt-16 p-6 space-y-6">
+                    <div class="text-7xl mb-4">${icon}</div>
+                    <h2 class="text-3xl font-bold ${success ? 'text-green-600' : 'text-primary-red'}">${title}</h2>
+                    <p class="text-lg text-gray-700 text-center">${message}</p>
+                    
+                    ${success ? `
+                        <div class="bg-white p-4 rounded-xl shadow-lg w-full max-w-xs space-y-2 text-sm border-t-4 border-green-500">
+                            <p><strong>订单编号:</strong> ${order.trackingId}</p>
+                            <p><strong>实付金额:</strong> ¥${order.finalAmount.toFixed(2)}</p>
+                            ${order.deduction > 0 ? `<p><strong>积分抵扣:</strong> -¥${order.deduction.toFixed(2)} (${order.pointsUsed} 积分)</p>` : ''}
+                        </div>
+                    ` : ''}
+
+                    <div class="flex space-x-4 pt-4">
+                        <button onclick="navigate('home')" class="bg-gray-200 text-gray-800 px-6 py-3 rounded-full font-semibold hover:bg-gray-300 transition-colors">
+                            返回首页
+                        </button>
+                        <button onclick="navigate('orders')" class="bg-primary-red text-white px-6 py-3 rounded-full font-semibold shadow-lg hover:bg-secondary-red transition-colors">
+                            查看订单
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderOrderHistoryView() {
+            if (state.orders.length === 0) {
+                return `
+                    <div class="flex flex-col items-center justify-center h-full pt-16 p-6">
+                        <div class="text-6xl mb-4 text-gray-300">📦</div>
+                        <p class="text-xl text-gray-500 mb-6">您还没有任何订单</p>
+                        <button onclick="navigate('home')" class="bg-primary-red text-white px-6 py-3 rounded-full text-lg font-semibold shadow-lg hover:bg-secondary-red transition-colors">
+                            去商城逛逛
+                        </button>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="p-4 pt-16 space-y-4">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 border-l-4 border-primary-red pl-2">历史订单 (${state.orders.length})</h2>
+                    
+                    <div class="space-y-4">
+                        ${state.orders.map(order => `
+                            <div class="bg-white p-4 rounded-xl shadow-lg border border-gray-100 space-y-2">
+                                <div class="flex justify-between items-center border-b pb-2 mb-2">
+                                    <p class="text-sm text-gray-500">订单号: ${order.trackingId}</p>
+                                    <span class="text-sm font-bold ${order.status === '待付款' ? 'text-orange-500' : 'text-green-600'}">${order.status}</span>
+                                </div>
+                                
+                                <!-- Items Summary -->
+                                ${order.items.slice(0, 1).map(item => `
+                                    <div class="flex items-center text-sm">
+                                        <span class="text-xl mr-2">${item.img}</span>
+                                        <span class="text-gray-700 truncate">${item.name} 等 ${order.items.length} 件商品</span>
+                                    </div>
+                                `).join('')}
+
+                                <div class="text-right pt-2 border-t border-gray-100">
+                                    <span class="text-gray-600">实付:</span>
+                                    <span class="text-xl font-bold text-primary-red ml-1">¥${order.finalAmount.toFixed(2)}</span>
+                                </div>
+
+                                <button onclick="viewTracking('${order.trackingId}')" class="w-full bg-primary-red text-white py-2 rounded-lg text-sm font-semibold hover:bg-secondary-red transition-colors mt-2">
+                                    查看物流
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function viewTracking(trackingId) {
+            const trackingInfo = `
+                <p><strong>订单编号:</strong> ${trackingId}</p>
+                <div class="mt-3 space-y-1 text-sm text-left">
+                    <p>📦 2025-10-26 10:00: 订单已提交，待商家发货</p>
+                    <p>🚚 2025-10-26 12:30: 商品已出库，正在打包</p>
+                    <p>✈️ 2025-10-26 16:00: 快件已揽收，离开南宁</p>
+                    <p>📍 2025-10-27 08:00: 快件到达目的地中转站</p>
+                </div>
+            `;
+            showMessage('物流追踪', trackingInfo, true);
+        }
+
+        function renderCustomerServiceView() {
+            return `
+                <div class="p-4 pt-16 space-y-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 border-l-4 border-primary-red pl-2">📞 在线客服</h2>
+                    
+                    <!-- Chat Simulation -->
+                    <div class="bg-white p-4 rounded-xl shadow-lg h-96 overflow-y-auto space-y-4" id="chat-window">
+                        <!-- AI Message 1 -->
+                        <div class="flex justify-start">
+                            <div class="bg-gray-200 p-3 rounded-xl max-w-xs">
+                                <p class="font-bold text-primary-red">AI 智能客服</p>
+                                <p class="text-sm">您好！我是AI智能客服，请问有什么可以帮您？我可以解答以下问题:</p>
+                                <ul class="list-disc pl-5 text-xs mt-1 space-y-0.5">
+                                    <li>退货政策</li>
+                                    <li>发票申请</li>
+                                    <li>会员福利</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input Area -->
+                    <div class="bg-white p-4 rounded-xl shadow-2xl flex space-x-3">
+                        <input type="text" id="chat-input" class="flex-grow px-4 py-2 border border-gray-300 rounded-full focus:ring-primary-red focus:border-primary-red transition duration-150" placeholder="请输入您的问题...">
+                        <button onclick="sendChatMessage()" class="bg-primary-red text-white p-2 rounded-full hover:bg-secondary-red transition-colors flex-shrink-0">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        </button>
+                    </div>
+
+                    <!-- Options -->
+                    <div class="flex justify-around text-sm">
+                        <button onclick="switchCustomerService('human')" class="text-blue-500 hover:text-blue-700 font-medium">转人工客服</button>
+                        <button onclick="switchCustomerService('AI')" class="text-primary-red hover:text-secondary-red font-medium">继续使用 AI</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        let isHumanService = false;
+
+        function switchCustomerService(type) {
+            isHumanService = type === 'human';
+            const chatWindow = document.getElementById('chat-window');
+            const message = isHumanService ? 
+                '👩‍💼 已为您转接至人工客服，请稍候...' : 
+                '🤖 重新连接 AI 智能客服。';
+            
+            const messageHtml = `
+                <div class="flex justify-start">
+                    <div class="bg-yellow-100 p-3 rounded-xl max-w-xs text-sm">
+                        <p class="font-bold">${isHumanService ? '人工客服' : 'AI 智能客服'}</p>
+                        <p>${message}</p>
+                    </div>
+                </div>
+            `;
+            chatWindow.innerHTML += messageHtml;
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function sendChatMessage() {
+            const inputEl = document.getElementById('chat-input');
+            const chatWindow = document.getElementById('chat-window');
+            const userText = inputEl.value.trim();
+
+            if (!userText) return;
+
+            // Display user message
+            const userMessageHtml = `
+                <div class="flex justify-end">
+                    <div class="bg-primary-red text-white p-3 rounded-xl max-w-xs text-sm">${userText}</div>
+                </div>
+            `;
+            chatWindow.innerHTML += userMessageHtml;
+
+            // Clear input
+            inputEl.value = '';
+
+            // Simulate AI/Human response delay
+            setTimeout(() => {
+                let responseText;
+                if (isHumanService) {
+                    responseText = '正在为您处理您的问题，请稍候。';
+                } else {
+                    // Simple AI logic
+                    if (userText.includes('退货') || userText.includes('退款')) {
+                        responseText = '我们的退货政策是：药品非质量问题，一经售出不支持退换，请您谅解。';
+                    } else if (userText.includes('发票')) {
+                        responseText = '您可以在订单完成后的7个工作日内，在订单详情页申请电子发票。';
+                    } else if (userText.includes('会员')) {
+                        responseText = '会员可享受专属会员价和积分抵扣服务 (10积分=1元，最多抵扣50%)。';
+                    } else {
+                        responseText = '抱歉，我暂时无法理解您的问题。您可以尝试转人工客服。';
+                    }
+                }
+
+                const responseHtml = `
+                    <div class="flex justify-start">
+                        <div class="bg-gray-200 p-3 rounded-xl max-w-xs text-sm">
+                            <p class="font-bold ${isHumanService ? 'text-blue-600' : 'text-primary-red'}">${isHumanService ? '人工客服' : 'AI 智能客服'}</p>
+                            <p>${responseText}</p>
+                        </div>
+                    </div>
+                `;
+                chatWindow.innerHTML += responseHtml;
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            }, 800);
+        }
+
+        function renderProfileView() {
+            const isMember = state.user && state.user.isMember;
+            const memberBadge = isMember ? 
+                `<div class="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                    VIP 会员
+                </div>` : 
+                `<div class="bg-gray-200 text-gray-600 px-3 py-1 rounded-full text-sm">
+                    普通用户
+                </div>`;
+
+            return `
+                <div class="p-4 pt-16 space-y-6">
+                    <!-- User Profile Header -->
+                    <div class="bg-gradient-to-r from-primary-red to-secondary-red text-white p-6 rounded-xl shadow-lg">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                </svg>
+                            </div>
+                            <div class="flex-grow">
+                                <h2 class="text-xl font-bold">${state.user.name}</h2>
+                                <p class="text-sm opacity-90">工会用户</p>
+                                ${memberBadge}
+                            </div>
+                        </div>
+                        ${isMember ? `
+                            <div class="mt-4 bg-white bg-opacity-20 rounded-lg p-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm">当前积分</span>
+                                    <span class="text-2xl font-bold">${state.user.points}</span>
+                                </div>
+                                <p class="text-xs opacity-80 mt-1">10积分 = 1元，最多抵扣50%</p>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="bg-white p-4 rounded-xl shadow-md text-center">
+                            <div class="text-2xl font-bold text-primary-red">${state.orders.length}</div>
+                            <div class="text-sm text-gray-600">总订单</div>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl shadow-md text-center">
+                            <div class="text-2xl font-bold text-green-600">${state.orders.filter(o => o.status !== '待付款').length}</div>
+                            <div class="text-sm text-gray-600">已完成</div>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl shadow-md text-center">
+                            <div class="text-2xl font-bold text-blue-600">${state.cart.length}</div>
+                            <div class="text-sm text-gray-600">购物车</div>
+                        </div>
+                    </div>
+
+                    <!-- Menu Items -->
+                    <div class="space-y-3">
+                        <h3 class="text-lg font-bold text-gray-800 border-l-4 border-primary-red pl-2">账户管理</h3>
+                        
+                        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                            <button onclick="navigate('orders')" class="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                        </svg>
+                                    </div>
+                                    <span class="text-gray-800">我的订单</span>
+                                </div>
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </button>
+                            
+                            <div class="border-t border-gray-100"></div>
+                            
+                            <button onclick="navigate('cart')" class="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <span class="text-gray-800">购物车</span>
+                                </div>
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <h3 class="text-lg font-bold text-gray-800 border-l-4 border-primary-red pl-2 mt-6">服务与帮助</h3>
+                        
+                        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                            <button onclick="navigate('customerService')" class="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                        </svg>
+                                    </div>
+                                    <span class="text-gray-800">在线客服</span>
+                                </div>
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </button>
+                            
+                            <div class="border-t border-gray-100"></div>
+                            
+                            <button onclick="showMessage('功能开发中', '此功能正在开发中，敬请期待！')" class="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <span class="text-gray-800">帮助中心</span>
+                                </div>
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <h3 class="text-lg font-bold text-gray-800 border-l-4 border-primary-red pl-2 mt-6">设置</h3>
+                        
+                        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                            <button onclick="showMessage('功能开发中', '此功能正在开发中，敬请期待！')" class="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <span class="text-gray-800">账户设置</span>
+                                </div>
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </button>
+                            
+                            <div class="border-t border-gray-100"></div>
+                            
+                            <button onclick="logout()" class="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                                        </svg>
+                                    </div>
+                                    <span class="text-gray-800">退出登录</span>
+                                </div>
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- Initialization ---
+
+        function init() {
+            // Initial render: always start at login view
+            if (!state.user) {
+                navigate('login');
+            } else {
+                // If the user were persisted (not needed here but good practice), restore view
+                document.getElementById('logout-btn').classList.remove('hidden');
+                document.getElementById('app-footer').classList.remove('hidden');
+                navigate('home');
+            }
+            updateCartCount();
+        }
+
+        // Start the application
+        init();
+
+    </script>
+
+</body>
+</html>
